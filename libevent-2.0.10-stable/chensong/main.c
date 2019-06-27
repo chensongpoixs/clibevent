@@ -8,10 +8,12 @@ void readcb(evutil_socket_t fd, short events, void *arg)
 {
     char buf[256] = {0};
     int ret = recv(fd,buf,sizeof(buf),0);
-    if(ret > 0){
+    if(ret > 0)
+    {
         send(fd,buf,ret,0);
     }
-    else if(ret == 0){
+    else if(ret == 0)
+    {
         //客户端关闭
         printf("client closed\n");
         close(fd);
@@ -34,7 +36,8 @@ void conncb(evutil_socket_t fd, short events, void *arg)
    struct sockaddr_in client;
    socklen_t len = sizeof(client);
    int cfd = accept(fd,(struct sockaddr*)&client,&len);
-   if(cfd > 0){
+   if(cfd > 0)
+   {
        //得到新连接,上树
         readEv = event_new(base,cfd,EV_READ|EV_PERSIST,readcb,NULL);
         event_add(readEv,NULL);
@@ -55,7 +58,8 @@ int main()
     int opt = 1;
     setsockopt(lfd,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));//设置端口复用
 
-    if(bind(lfd,(struct sockaddr*)&serv,sizeof(serv)) < 0){
+    if(bind(lfd,(struct sockaddr*)&serv,sizeof(serv)) < 0)
+    {
         perror("bind err");
         return -1;
     }
@@ -75,7 +79,8 @@ int main()
     //各种释放
     event_base_free(base);//释放根
     event_free(connEv);
-    if(readEv ){
+    if(readEv )
+    {
         event_free(readEv);
     }
     close(lfd);

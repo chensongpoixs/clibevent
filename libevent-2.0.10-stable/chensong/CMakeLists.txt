@@ -28,7 +28,7 @@ LINK_DIRECTORIES(
 #				/usr/local/lib
 #				/usr/local/lib64
 #				/usr/lib/x86_64-linux-gnu
-				${PROJECT_SOURCE_DIR}/linux/lib
+#				${PROJECT_SOURCE_DIR}/linux/lib
 				${PROJECT_SOURCE_DIR}/../lib
 				)
 file(GLOB ALL_CXX_SRCS

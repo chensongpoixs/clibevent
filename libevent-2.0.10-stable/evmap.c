@@ -383,8 +383,7 @@ evmap_io_del(struct event_base *base, evutil_socket_t fd, struct event *ev)
 	return (retval);
 }
 
-void
-evmap_io_active(struct event_base *base, evutil_socket_t fd, short events)
+void evmap_io_active(struct event_base *base, evutil_socket_t fd, short events)
 {
 	struct event_io_map *io = &base->io;
 	struct evmap_io *ctx;
@@ -393,12 +392,15 @@ evmap_io_active(struct event_base *base, evutil_socket_t fd, short events)
 #ifndef EVMAP_USE_HT
 	EVUTIL_ASSERT(fd < io->nentries);
 #endif
-	GET_IO_SLOT(ctx, io, fd, evmap_io);
+	GET_IO_SLOT(ctx, io, fd, evmap_io);//(x) = (struct type *)((map)->entries[slot])
 
 	EVUTIL_ASSERT(ctx);
-	TAILQ_FOREACH(ev, &ctx->events, ev_io_next) {
+	TAILQ_FOREACH(ev, &ctx->events, ev_io_next) 
+	{
 		if (ev->ev_events & events)
+		{
 			event_active_nolock(ev, ev->ev_events & events, 1);
+		}
 	}
 }
 
@@ -501,16 +503,18 @@ event_changelist_init(struct event_changelist *changelist)
 }
 
 /** Helper: return the changelist_fdinfo corresponding to a given change. */
-static inline struct event_changelist_fdinfo *
-event_change_get_fdinfo(struct event_base *base,
+static inline struct event_changelist_fdinfo *event_change_get_fdinfo(struct event_base *base,
     const struct event_change *change)
 {
 	char *ptr;
-	if (change->read_change & EV_CHANGE_SIGNAL) {
+	if (change->read_change & EV_CHANGE_SIGNAL) 
+	{
 		struct evmap_signal *ctx;
 		GET_SIGNAL_SLOT(ctx, &base->sigmap, change->fd, evmap_signal);
 		ptr = ((char*)ctx) + sizeof(struct evmap_signal);
-	} else {
+	}
+	else 
+	{
 		struct evmap_io *ctx;
 		GET_IO_SLOT(ctx, &base->io, change->fd, evmap_io);
 		ptr = ((char*)ctx) + sizeof(struct evmap_io);
@@ -553,15 +557,15 @@ event_changelist_check(struct event_base *base)
 #define event_changelist_check(base)  ((void)0)
 #endif
 
-void
-event_changelist_remove_all(struct event_changelist *changelist,
+void event_changelist_remove_all(struct event_changelist *changelist,
     struct event_base *base)
 {
 	int i;
 
 	event_changelist_check(base);
 
-	for (i = 0; i < changelist->n_changes; ++i) {
+	for (i = 0; i < changelist->n_changes; ++i) 
+	{
 		struct event_change *ch = &changelist->changes[i];
 		struct event_changelist_fdinfo *fdinfo =
 		    event_change_get_fdinfo(base, ch);

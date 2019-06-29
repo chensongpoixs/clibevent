@@ -126,8 +126,7 @@ evsig_set_base(struct event_base *base)
 }
 
 /* Callback for when the signal handler write a byte to our signaling socket */
-static void
-evsig_cb(evutil_socket_t fd, short what, void *arg)
+static void evsig_cb(evutil_socket_t fd, short what, void *arg)
 {
 	static char signals[1024];
 	ev_ssize_t n;
@@ -165,12 +164,13 @@ evsig_cb(evutil_socket_t fd, short what, void *arg)
 	EVBASE_RELEASE_LOCK(base, th_base_lock);
 }
 
-int
-evsig_init(struct event_base *base)
+int evsig_init(struct event_base *base)
 {
 #ifndef _EVENT_DISABLE_THREAD_SUPPORT
-	if (! evsig_base_lock)
+	if (!evsig_base_lock)
+	{
 		EVTHREAD_ALLOC_LOCK(evsig_base_lock, 0);
+	}
 #endif
 
 	/*

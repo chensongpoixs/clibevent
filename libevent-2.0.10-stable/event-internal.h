@@ -123,7 +123,7 @@ HT_HEAD(event_io_map, event_map_entry);
 struct event_signal_map {
 	/* An array of evmap_io * or of evmap_signal *; empty entries are
 	 * set to NULL. */
-	void **entries;
+	void **entries;  // ถþฮฌสýื้
 	/* The number of entries available in entries */
 	int nentries;
 };

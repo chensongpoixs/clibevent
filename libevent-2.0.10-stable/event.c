@@ -1644,11 +1644,12 @@ event_base_once(struct event_base *base, evutil_socket_t fd, short events,
 	return (0);
 }
 
-int
-event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, short events, void (*callback)(evutil_socket_t, short, void *), void *arg)
+int event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, short events, void (*callback)(evutil_socket_t, short, void *), void *arg)
 {
 	if (!base)
+	{
 		base = current_base;
+	}
 
 	_event_debug_assert_not_added(ev);
 
@@ -1929,14 +1930,17 @@ evthread_notify_base_eventfd(struct event_base *base)
 /** Tell the thread currently running the event_loop for base (if any) that it
  * needs to stop waiting in its dispatch function (if it is) and process all
  * active events and deferred callbacks (if there are any).  */
-static int
-evthread_notify_base(struct event_base *base)
+static int evthread_notify_base(struct event_base *base)
 {
 	EVENT_BASE_ASSERT_LOCKED(base);
 	if (!base->th_notify_fn)
+	{
 		return -1;
+	}
 	if (base->is_notify_pending)
+	{
 		return 0;
+	}
 	base->is_notify_pending = 1;
 	return base->th_notify_fn(base);
 }
@@ -2207,8 +2211,7 @@ event_active(struct event *ev, int res, short ncalls)
 }
 
 
-void
-event_active_nolock(struct event *ev, int res, short ncalls)
+void event_active_nolock(struct event *ev, int res, short ncalls)
 {
 	struct event_base *base;
 
@@ -2217,7 +2220,8 @@ event_active_nolock(struct event *ev, int res, short ncalls)
 
 
 	/* We get different kinds of events, add them together */
-	if (ev->ev_flags & EVLIST_ACTIVE) {
+	if (ev->ev_flags & EVLIST_ACTIVE) 
+	{
 		ev->ev_res |= res;
 		return;
 	}
@@ -2228,9 +2232,11 @@ event_active_nolock(struct event *ev, int res, short ncalls)
 
 	ev->ev_res = res;
 
-	if (ev->ev_events & EV_SIGNAL) {
+	if (ev->ev_events & EV_SIGNAL) 
+	{
 #ifndef _EVENT_DISABLE_THREAD_SUPPORT
-		if (base->current_event == ev && !EVBASE_IN_THREAD(base)) {
+		if (base->current_event == ev && !EVBASE_IN_THREAD(base)) 
+		{
 			++base->current_event_waiters;
 			EVTHREAD_COND_WAIT(base->current_event_cond, base->th_base_lock);
 		}
@@ -2242,7 +2248,9 @@ event_active_nolock(struct event *ev, int res, short ncalls)
 	event_queue_insert(base, ev, EVLIST_ACTIVE);
 
 	if (EVBASE_NEED_NOTIFY(base))
+	{
 		evthread_notify_base(base);
+	}
 }
 
 void
@@ -2488,15 +2496,17 @@ insert_common_timeout_inorder(struct common_timeout_list *ctl,
 	    ev_timeout_pos.ev_next_with_common_timeout);
 }
 
-static void
-event_queue_insert(struct event_base *base, struct event *ev, int queue)
+static void event_queue_insert(struct event_base *base, struct event *ev, int queue)
 {
 	EVENT_BASE_ASSERT_LOCKED(base);
 
-	if (ev->ev_flags & queue) {
+	if (ev->ev_flags & queue) 
+	{
 		/* Double insertion is possible for active events */
 		if (queue & EVLIST_ACTIVE)
+		{
 			return;
+		}
 
 		event_errx(1, "%s: %p(fd %d) already on queue %x", __func__,
 			   ev, ev->ev_fd, queue);
@@ -2504,10 +2514,13 @@ event_queue_insert(struct event_base *base, struct event *ev, int queue)
 	}
 
 	if (~ev->ev_flags & EVLIST_INTERNAL)
+	{
 		base->event_count++;
+	}
 
 	ev->ev_flags |= queue;
-	switch (queue) {
+	switch (queue) 
+	{
 	case EVLIST_INSERTED:
 		TAILQ_INSERT_TAIL(&base->eventqueue, ev, ev_next);
 		break;
@@ -2516,13 +2529,18 @@ event_queue_insert(struct event_base *base, struct event *ev, int queue)
 		TAILQ_INSERT_TAIL(&base->activequeues[ev->ev_pri],
 		    ev,ev_active_next);
 		break;
-	case EVLIST_TIMEOUT: {
-		if (is_common_timeout(&ev->ev_timeout, base)) {
+	case EVLIST_TIMEOUT: 
+	{
+		if (is_common_timeout(&ev->ev_timeout, base)) 
+		{
 			struct common_timeout_list *ctl =
 			    get_common_timeout_list(base, &ev->ev_timeout);
 			insert_common_timeout_inorder(ctl, ev);
-		} else
+		}
+		else
+		{
 			min_heap_push(&base->timeheap, ev);
+		}
 		break;
 	}
 	default:
@@ -2569,8 +2587,7 @@ event_mm_malloc_(size_t sz)
 		return malloc(sz);
 }
 
-void *
-event_mm_calloc_(size_t count, size_t size)
+void *event_mm_calloc_(size_t count, size_t size)
 {
 	if (_mm_malloc_fn) {
 		size_t sz = count * size;

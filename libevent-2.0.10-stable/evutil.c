@@ -154,8 +154,7 @@ evutil_read_file(const char *filename, char **content_out, size_t *len_out,
 	return 0;
 }
 
-int
-evutil_socketpair(int family, int type, int protocol, evutil_socket_t fd[2])
+int evutil_socketpair(int family, int type, int protocol, evutil_socket_t fd[2])
 {
 #ifndef WIN32
 	return socketpair(family, type, protocol, fd);
@@ -164,8 +163,7 @@ evutil_socketpair(int family, int type, int protocol, evutil_socket_t fd[2])
 #endif
 }
 
-int
-evutil_ersatz_socketpair(int family, int type, int protocol,
+int evutil_ersatz_socketpair(int family, int type, int protocol,
     evutil_socket_t fd[2])
 {
 	/* This code is originally from Tor.  Used with permission. */
@@ -188,62 +186,83 @@ evutil_ersatz_socketpair(int family, int type, int protocol,
 	ev_socklen_t size;
 	int saved_errno = -1;
 
-	if (protocol
-		|| (family != AF_INET
+	if (protocol || (family != AF_INET
 #ifdef AF_UNIX
 		    && family != AF_UNIX
 #endif
-		)) {
+		))
+	{
 		EVUTIL_SET_SOCKET_ERROR(ERR(EAFNOSUPPORT));
 		return -1;
 	}
-	if (!fd) {
+	if (!fd) 
+	{
 		EVUTIL_SET_SOCKET_ERROR(ERR(EINVAL));
 		return -1;
 	}
 
 	listener = socket(AF_INET, type, 0);
 	if (listener < 0)
+	{
 		return -1;
+	}
 	memset(&listen_addr, 0, sizeof(listen_addr));
 	listen_addr.sin_family = AF_INET;
 	listen_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 	listen_addr.sin_port = 0;	/* kernel chooses port.	 */
-	if (bind(listener, (struct sockaddr *) &listen_addr, sizeof (listen_addr))
-		== -1)
+	if (bind(listener, (struct sockaddr *) &listen_addr, sizeof(listen_addr)) == -1)
+	{
 		goto tidy_up_and_fail;
+	}
 	if (listen(listener, 1) == -1)
+	{
 		goto tidy_up_and_fail;
+	}
 
 	connector = socket(AF_INET, type, 0);
 	if (connector < 0)
+	{
 		goto tidy_up_and_fail;
+	}
 	/* We want to find out the port number to connect to.  */
 	size = sizeof(connect_addr);
 	if (getsockname(listener, (struct sockaddr *) &connect_addr, &size) == -1)
+	{
 		goto tidy_up_and_fail;
-	if (size != sizeof (connect_addr))
+	}
+	if (size != sizeof(connect_addr))
+	{
 		goto abort_tidy_up_and_fail;
-	if (connect(connector, (struct sockaddr *) &connect_addr,
-				sizeof(connect_addr)) == -1)
+	}
+	if (connect(connector, (struct sockaddr *) &connect_addr, sizeof(connect_addr)) == -1)
+	{
 		goto tidy_up_and_fail;
+	}
 
 	size = sizeof(listen_addr);
 	acceptor = accept(listener, (struct sockaddr *) &listen_addr, &size);
 	if (acceptor < 0)
+	{
 		goto tidy_up_and_fail;
+	}
 	if (size != sizeof(listen_addr))
+	{
 		goto abort_tidy_up_and_fail;
+	}
 	evutil_closesocket(listener);
 	/* Now check we are talking to ourself by matching port and host on the
 	   two sockets.	 */
 	if (getsockname(connector, (struct sockaddr *) &connect_addr, &size) == -1)
+	{
 		goto tidy_up_and_fail;
-	if (size != sizeof (connect_addr)
+	}
+	if (size != sizeof(connect_addr)
 		|| listen_addr.sin_family != connect_addr.sin_family
 		|| listen_addr.sin_addr.s_addr != connect_addr.sin_addr.s_addr
 		|| listen_addr.sin_port != connect_addr.sin_port)
+	{
 		goto abort_tidy_up_and_fail;
+	}
 	fd[0] = connector;
 	fd[1] = acceptor;
 
@@ -266,8 +285,7 @@ evutil_ersatz_socketpair(int family, int type, int protocol,
 #undef ERR
 }
 
-int
-evutil_make_socket_nonblocking(evutil_socket_t fd)
+int evutil_make_socket_nonblocking(evutil_socket_t fd)
 {
 #ifdef WIN32
 	{
@@ -308,8 +326,7 @@ evutil_make_listen_socket_reuseable(evutil_socket_t sock)
 #endif
 }
 
-int
-evutil_make_socket_closeonexec(evutil_socket_t fd)
+int evutil_make_socket_closeonexec(evutil_socket_t fd)
 {
 #if !defined(WIN32) && defined(_EVENT_HAVE_SETFD)
 	int flags;
@@ -325,8 +342,7 @@ evutil_make_socket_closeonexec(evutil_socket_t fd)
 	return 0;
 }
 
-int
-evutil_closesocket(evutil_socket_t sock)
+int evutil_closesocket(evutil_socket_t sock)
 {
 #ifndef WIN32
 	return close(sock);
@@ -2044,11 +2060,12 @@ evutil_sockaddr_is_loopback(const struct sockaddr *addr)
 #define MAX_SECONDS_IN_MSEC_LONG \
 	(((LONG_MAX) - 999) / 1000)
 
-long
-evutil_tv_to_msec(const struct timeval *tv)
+long evutil_tv_to_msec(const struct timeval *tv)
 {
 	if (tv->tv_usec > 1000000 || tv->tv_sec > MAX_SECONDS_IN_MSEC_LONG)
+	{
 		return -1;
+	}
 
 	return (tv->tv_sec * 1000) + ((tv->tv_usec + 999) / 1000);
 }

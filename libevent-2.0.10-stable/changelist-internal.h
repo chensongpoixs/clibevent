@@ -67,9 +67,9 @@ struct event_change {
 /* Flags for read_change and write_change. */
 
 /* If set, add the event. */
-#define EV_CHANGE_ADD     0x01
+#define EV_CHANGE_ADD     0x01    // 0001
 /* If set, delete the event.  Exclusive with EV_CHANGE_ADD */
-#define EV_CHANGE_DEL     0x02
+#define EV_CHANGE_DEL     0x02    // 0010
 /* If set, this event refers a signal, not an fd. */
 #define EV_CHANGE_SIGNAL  EV_SIGNAL
 /* Set for persistent events.  Currently not used. */

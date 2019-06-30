@@ -37,7 +37,7 @@
 
 typedef struct min_heap
 {
-	struct event** p;
+	struct event** p; // 数组
 	unsigned n, a;
 } min_heap_t;
 
@@ -49,6 +49,12 @@ static inline int	     min_heap_elem_greater(struct event *a, struct event *b);
 static inline int	     min_heap_empty(min_heap_t* s);
 static inline unsigned	     min_heap_size(min_heap_t* s);
 static inline struct event*  min_heap_top(min_heap_t* s);
+/** 
+* 动态扩容
+* @param s : 哈希结构
+* @param n : 目前的哈希数据数量
+* @return 返回是否成功
+**/
 static inline int	     min_heap_reserve(min_heap_t* s, unsigned n);
 static inline int	     min_heap_push(min_heap_t* s, struct event* e);
 static inline struct event*  min_heap_pop(min_heap_t* s);
@@ -116,14 +122,22 @@ int min_heap_erase(min_heap_t* s, struct event* e)
 
 int min_heap_reserve(min_heap_t* s, unsigned n)
 {
+	//1. 判断是否扩容
 	if (s->a < n)
 	{
 		struct event** p;
+		//2. 默认扩容2倍
 		unsigned a = s->a ? s->a * 2 : 8;
 		if (a < n)
+		{
 			a = n;
+		}
+		//3. 申请内存
 		if (!(p = (struct event**)mm_realloc(s->p, a * sizeof *p)))
+		{
 			return -1;
+		}
+		// 4. 修改哈希的数据
 		s->p = p;
 		s->a = a;
 	}

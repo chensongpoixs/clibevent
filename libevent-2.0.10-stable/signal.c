@@ -197,7 +197,7 @@ int evsig_init(struct event_base *base)
 
 	evutil_make_socket_nonblocking(base->sig.ev_signal_pair[0]);
 	evutil_make_socket_nonblocking(base->sig.ev_signal_pair[1]);
-
+	// event_new call 
 	event_assign(&base->sig.ev_signal, base, base->sig.ev_signal_pair[1],
 		EV_READ | EV_PERSIST, evsig_cb, base);
 
@@ -354,8 +354,7 @@ _evsig_restore_handler(struct event_base *base, int evsignal)
 	return ret;
 }
 
-static int
-evsig_del(struct event_base *base, evutil_socket_t evsignal, short old, short events, void *p)
+static int evsig_del(struct event_base *base, evutil_socket_t evsignal, short old, short events, void *p)
 {
 	EVUTIL_ASSERT(evsignal >= 0 && evsignal < NSIG);
 

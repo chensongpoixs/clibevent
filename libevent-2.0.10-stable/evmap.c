@@ -194,20 +194,25 @@ evmap_io_clear(struct event_io_map* ctx)
 
 /** Expand 'map' with new entries of width 'msize' until it is big enough
 	to store a value in 'slot'.
- */
-static int
-evmap_make_space(struct event_signal_map *map, int slot, int msize)
+ */   
+static int evmap_make_space(struct event_signal_map *map, int slot, int msize)
 {
-	if (map->nentries <= slot) {
+	// À©ÈÝ²Ù×÷
+	if (map->nentries <= slot) 
+	{
 		int nentries = map->nentries ? map->nentries : 32;
 		void **tmp;
 
 		while (nentries <= slot)
+		{
 			nentries <<= 1;
+		}
 
 		tmp = (void **)mm_realloc(map->entries, nentries * msize);
 		if (tmp == NULL)
+		{
 			return (-1);
+		}
 
 		memset(&tmp[map->nentries], 0,
 		    (nentries - map->nentries) * msize);
@@ -256,8 +261,7 @@ evmap_io_init(struct evmap_io *entry)
 
 /* return -1 on error, 0 on success if nothing changed in the event backend,
  * and 1 on success if something did. */
-int
-evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
+int evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 {
 	const struct eventop *evsel = base->evsel;
 	struct event_io_map *io = &base->io;
@@ -272,9 +276,12 @@ evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 		return 0;
 
 #ifndef EVMAP_USE_HT
-	if (fd >= io->nentries) {
+	if (fd >= io->nentries) 
+	{
 		if (evmap_make_space(io, fd, sizeof(struct evmap_io *)) == -1)
+		{
 			return (-1);
+		}
 	}
 #endif
 	GET_IO_SLOT_AND_CTOR(ctx, io, fd, evmap_io, evmap_io_init,
@@ -284,39 +291,54 @@ evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 	nwrite = ctx->nwrite;
 
 	if (nread)
+	{
 		old |= EV_READ;
+	}
 	if (nwrite)
+	{
 		old |= EV_WRITE;
+	}
 
-	if (ev->ev_events & EV_READ) {
+	if (ev->ev_events & EV_READ)
+	{
 		if (++nread == 1)
+		{
 			res |= EV_READ;
+		}
 	}
-	if (ev->ev_events & EV_WRITE) {
+	if (ev->ev_events & EV_WRITE) 
+	{
 		if (++nwrite == 1)
+		{
 			res |= EV_WRITE;
+		}
 	}
-	if (EVUTIL_UNLIKELY(nread > 0xffff || nwrite > 0xffff)) {
+	if (EVUTIL_UNLIKELY(nread > 0xffff || nwrite > 0xffff)) 
+	{
 		event_warnx("Too many events reading or writing on fd %d",
 		    (int)fd);
 		return -1;
 	}
 	if (EVENT_DEBUG_MODE_IS_ON() &&
 	    (old_ev = TAILQ_FIRST(&ctx->events)) &&
-	    (old_ev->ev_events&EV_ET) != (ev->ev_events&EV_ET)) {
+	    (old_ev->ev_events&EV_ET) != (ev->ev_events&EV_ET)) 
+	{
 		event_warnx("Tried to mix edge-triggered and non-edge-triggered"
 		    " events on fd %d", (int)fd);
 		return -1;
 	}
 
-	if (res) {
+	if (res)
+	{
 		void *extra = ((char*)ctx) + sizeof(struct evmap_io);
 		/* XXX(niels): we cannot mix edge-triggered and
 		 * level-triggered, we should probably assert on
 		 * this. */
 		if (evsel->add(base, ev->ev_fd,
 			old, (ev->ev_events & EV_ET) | res, extra) == -1)
+		{
 			return (-1);
+		}
 		retval = 1;
 	}
 
@@ -329,8 +351,7 @@ evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 
 /* return -1 on error, 0 on success if nothing changed in the event backend,
  * and 1 on success if something did. */
-int
-evmap_io_del(struct event_base *base, evutil_socket_t fd, struct event *ev)
+int evmap_io_del(struct event_base *base, evutil_socket_t fd, struct event *ev)
 {
 	const struct eventop *evsel = base->evsel;
 	struct event_io_map *io = &base->io;
@@ -413,22 +434,25 @@ evmap_signal_init(struct evmap_signal *entry)
 }
 
 
-int
-evmap_signal_add(struct event_base *base, int sig, struct event *ev)
+int evmap_signal_add(struct event_base *base, int sig, struct event *ev)
 {
 	const struct eventop *evsel = base->evsigsel;
 	struct event_signal_map *map = &base->sigmap;
 	struct evmap_signal *ctx = NULL;
 
-	if (sig >= map->nentries) {
+	if (sig >= map->nentries) 
+	{
 		if (evmap_make_space(
 			map, sig, sizeof(struct evmap_signal *)) == -1)
+		{
 			return (-1);
+		}
 	}
 	GET_SIGNAL_SLOT_AND_CTOR(ctx, map, sig, evmap_signal, evmap_signal_init,
 	    base->evsigsel->fdinfo_len);
 
-	if (TAILQ_EMPTY(&ctx->events)) {
+	if (TAILQ_EMPTY(&ctx->events))
+	{
 		if (evsel->add(base, ev->ev_fd, 0, EV_SIGNAL, NULL)
 		    == -1)
 			return (-1);

@@ -381,8 +381,7 @@ evutil_strtoll(const char *s, char **endptr, int base)
 
 #ifndef _EVENT_HAVE_GETTIMEOFDAY
 /* No gettimeofday; this muse be windows. */
-int
-evutil_gettimeofday(struct timeval *tv, struct timezone *tz)
+int evutil_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
 	struct _timeb tb;
 
@@ -2023,8 +2022,7 @@ evutil_issetugid(void)
 #endif
 }
 
-const char *
-evutil_getenv(const char *varname)
+const char *evutil_getenv(const char *varname)
 {
 	if (evutil_issetugid())
 		return NULL;

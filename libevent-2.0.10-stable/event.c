@@ -1121,8 +1121,7 @@ common_timeout_callback(evutil_socket_t fd, short what, void *arg)
 
 #define MAX_COMMON_TIMEOUTS 256
 
-const struct timeval *
-event_base_init_common_timeout(struct event_base *base,
+const struct timeval *event_base_init_common_timeout(struct event_base *base,
     const struct timeval *duration)
 {
 	int i;
@@ -1376,8 +1375,7 @@ event_dispatch(void)
 	return (event_loop(0));
 }
 
-int
-event_base_dispatch(struct event_base *event_base)
+int event_base_dispatch(struct event_base *event_base)
 {
 	return (event_base_loop(event_base, 0));
 }
@@ -1459,14 +1457,12 @@ event_base_got_exit(struct event_base *event_base)
 
 /* not thread safe */
 
-int
-event_loop(int flags)
+int event_loop(int flags)
 {
 	return event_base_loop(current_base, flags);
 }
 
-int
-event_base_loop(struct event_base *base, int flags)
+int event_base_loop(struct event_base *base, int flags)
 {
 	const struct eventop *evsel = base->evsel;
 	struct timeval tv;
@@ -1499,22 +1495,28 @@ event_base_loop(struct event_base *base, int flags)
 
 	base->event_gotterm = base->event_break = 0;
 
-	while (!done) {
+	while (!done) 
+	{
 		/* Terminate the loop if we have been asked to */
-		if (base->event_gotterm) {
+		if (base->event_gotterm) 
+		{
 			break;
 		}
 
-		if (base->event_break) {
+		if (base->event_break) 
+		{
 			break;
 		}
 
 		timeout_correct(base, &tv);
 
 		tv_p = &tv;
-		if (!N_ACTIVE_CALLBACKS(base) && !(flags & EVLOOP_NONBLOCK)) {
+		if (!N_ACTIVE_CALLBACKS(base) && !(flags & EVLOOP_NONBLOCK)) 
+		{
 			timeout_next(base, &tv_p);
-		} else {
+		}
+		else 
+		{
 			/*
 			 * if we have active events, we just poll new events
 			 * without waiting.
@@ -1523,7 +1525,8 @@ event_base_loop(struct event_base *base, int flags)
 		}
 
 		/* If we have no events, we just exit */
-		if (!event_haveevents(base) && !N_ACTIVE_CALLBACKS(base)) {
+		if (!event_haveevents(base) && !N_ACTIVE_CALLBACKS(base)) 
+		{
 			event_debug(("%s: no events registered.", __func__));
 			retval = 1;
 			goto done;
@@ -1536,7 +1539,8 @@ event_base_loop(struct event_base *base, int flags)
 
 		res = evsel->dispatch(base, tv_p);
 
-		if (res == -1) {
+		if (res == -1) 
+		{
 			event_debug(("%s: dispatch returned unsuccessfully.",
 				__func__));
 			retval = -1;
@@ -1547,14 +1551,20 @@ event_base_loop(struct event_base *base, int flags)
 
 		timeout_process(base);
 
-		if (N_ACTIVE_CALLBACKS(base)) {
+		if (N_ACTIVE_CALLBACKS(base))
+		{
 			int n = event_process_active(base);
 			if ((flags & EVLOOP_ONCE)
-			    && N_ACTIVE_CALLBACKS(base) == 0
-			    && n != 0)
+				&& N_ACTIVE_CALLBACKS(base) == 0
+				&& n != 0)
+			{
 				done = 1;
-		} else if (flags & EVLOOP_NONBLOCK)
+			}
+		}
+		else if (flags & EVLOOP_NONBLOCK)
+		{
 			done = 1;
+		}
 	}
 	event_debug(("%s: asked to terminate loop.", __func__));
 
@@ -1682,7 +1692,8 @@ int event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, 
 
 	min_heap_elem_init(ev);
 
-	if (base != NULL) {
+	if (base != NULL) 
+	{
 		/* by default, we put new events into the middle priority */
 		ev->ev_pri = base->nactivequeues / 2;
 	}
@@ -1716,14 +1727,16 @@ event_set(struct event *ev, evutil_socket_t fd, short events,
 	EVUTIL_ASSERT(r == 0);
 }
 
-struct event *
-event_new(struct event_base *base, evutil_socket_t fd, short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
+struct event *event_new(struct event_base *base, evutil_socket_t fd, short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
 {
 	struct event *ev;
 	ev = mm_malloc(sizeof(struct event));
 	if (ev == NULL)
+	{
 		return (NULL);
-	if (event_assign(ev, base, fd, events, cb, arg) < 0) {
+	}
+	if (event_assign(ev, base, fd, events, cb, arg) < 0) 
+	{
 		mm_free(ev);
 		return (NULL);
 	}
@@ -1757,15 +1770,18 @@ event_debug_unassign(struct event *ev)
  * changing the priority is going to fail.
  */
 
-int
-event_priority_set(struct event *ev, int pri)
+int event_priority_set(struct event *ev, int pri)
 {
 	_event_debug_assert_is_setup(ev);
 
 	if (ev->ev_flags & EVLIST_ACTIVE)
+	{
 		return (-1);
+	}
 	if (pri < 0 || pri >= ev->ev_base->nactivequeues)
+	{
 		return (-1);
+	}
 
 	ev->ev_pri = pri;
 
@@ -1874,8 +1890,7 @@ event_get_callback_arg(const struct event *ev)
 	return ev->ev_arg;
 }
 
-int
-event_add(struct event *ev, const struct timeval *tv)
+int event_add(struct event *ev, const struct timeval *tv)
 {
 	int res;
 
@@ -1949,8 +1964,7 @@ static int evthread_notify_base(struct event_base *base)
  * except: 1) it requires that we have the lock.  2) if tv_is_absolute is set,
  * we treat tv as an absolute time, not as an interval to add to the current
  * time */
-static inline int
-event_add_internal(struct event *ev, const struct timeval *tv,
+static inline int event_add_internal(struct event *ev, const struct timeval *tv,
     int tv_is_absolute)
 {
 	struct event_base *base = ev->ev_base;
@@ -1975,10 +1989,13 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 	 * prepare for timeout insertion further below, if we get a
 	 * failure on any step, we should not change any state.
 	 */
-	if (tv != NULL && !(ev->ev_flags & EVLIST_TIMEOUT)) {
+	if (tv != NULL && !(ev->ev_flags & EVLIST_TIMEOUT)) 
+	{
 		if (min_heap_reserve(&base->timeheap,
 			1 + min_heap_size(&base->timeheap)) == -1)
+		{
 			return (-1);  /* ENOMEM == errno */
+		}
 	}
 
 	/* If the main thread is currently executing a signal event's
@@ -1987,21 +2004,31 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 	 * we can race on ev_ncalls and ev_pncalls below. */
 #ifndef _EVENT_DISABLE_THREAD_SUPPORT
 	if (base->current_event == ev && (ev->ev_events & EV_SIGNAL)
-	    && !EVBASE_IN_THREAD(base)) {
+	    && !EVBASE_IN_THREAD(base)) 
+	{
 		++base->current_event_waiters;
 		EVTHREAD_COND_WAIT(base->current_event_cond, base->th_base_lock);
 	}
 #endif
 
 	if ((ev->ev_events & (EV_READ|EV_WRITE|EV_SIGNAL)) &&
-	    !(ev->ev_flags & (EVLIST_INSERTED|EVLIST_ACTIVE))) {
-		if (ev->ev_events & (EV_READ|EV_WRITE))
+	    !(ev->ev_flags & (EVLIST_INSERTED|EVLIST_ACTIVE))) 
+	{
+		if (ev->ev_events & (EV_READ | EV_WRITE))
+		{
 			res = evmap_io_add(base, ev->ev_fd, ev);
+		}
 		else if (ev->ev_events & EV_SIGNAL)
+		{
 			res = evmap_signal_add(base, (int)ev->ev_fd, ev);
+		}
 		if (res != -1)
+		{
+			// 添加到反应堆队列中
 			event_queue_insert(base, ev, EVLIST_INSERTED);
-		if (res == 1) {
+		}
+		if (res == 1) 
+		{
 			/* evmap says we need to notify the main thread. */
 			notify = 1;
 			res = 0;
@@ -2012,7 +2039,8 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 	 * we should change the timeout state only if the previous event
 	 * addition succeeded.
 	 */
-	if (res != -1 && tv != NULL) {
+	if (res != -1 && tv != NULL)
+	{
 		struct timeval now;
 		int common_timeout;
 
@@ -2023,16 +2051,21 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 		 * If tv_is_absolute, this was already set.
 		 */
 		if (ev->ev_closure == EV_CLOSURE_PERSIST && !tv_is_absolute)
+		{
 			ev->ev_io_timeout = *tv;
+		}
 
 		/*
 		 * we already reserved memory above for the case where we
 		 * are not replacing an existing timeout.
 		 */
-		if (ev->ev_flags & EVLIST_TIMEOUT) {
+		if (ev->ev_flags & EVLIST_TIMEOUT) 
+		{
 			/* XXX I believe this is needless. */
 			if (min_heap_elt_is_top(ev))
+			{
 				notify = 1;
+			}
 			event_queue_remove(base, ev, EVLIST_TIMEOUT);
 		}
 
@@ -2040,12 +2073,15 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 		 * this timeout before the callback can be executed
 		 * removes it from the active list. */
 		if ((ev->ev_flags & EVLIST_ACTIVE) &&
-		    (ev->ev_res & EV_TIMEOUT)) {
-			if (ev->ev_events & EV_SIGNAL) {
+		    (ev->ev_res & EV_TIMEOUT))
+		{
+			if (ev->ev_events & EV_SIGNAL) 
+			{
 				/* See if we are just active executing
 				 * this event in a loop
 				 */
-				if (ev->ev_ncalls && ev->ev_pncalls) {
+				if (ev->ev_ncalls && ev->ev_pncalls) 
+				{
 					/* Abort loop */
 					*ev->ev_pncalls = 0;
 				}
@@ -2057,15 +2093,20 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 		gettime(base, &now);
 
 		common_timeout = is_common_timeout(tv, base);
-		if (tv_is_absolute) {
+		if (tv_is_absolute) 
+		{
 			ev->ev_timeout = *tv;
-		} else if (common_timeout) {
+		}
+		else if (common_timeout) 
+		{
 			struct timeval tmp = *tv;
 			tmp.tv_usec &= MICROSECONDS_MASK;
 			evutil_timeradd(&now, &tmp, &ev->ev_timeout);
 			ev->ev_timeout.tv_usec |=
 			    (tv->tv_usec & ~MICROSECONDS_MASK);
-		} else {
+		}
+		else 
+		{
 			evutil_timeradd(&now, tv, &ev->ev_timeout);
 		}
 
@@ -2074,25 +2115,33 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 			 (int)tv->tv_sec, ev->ev_callback));
 
 		event_queue_insert(base, ev, EVLIST_TIMEOUT);
-		if (common_timeout) {
+		if (common_timeout) 
+		{
 			struct common_timeout_list *ctl =
 			    get_common_timeout_list(base, &ev->ev_timeout);
-			if (ev == TAILQ_FIRST(&ctl->events)) {
+			if (ev == TAILQ_FIRST(&ctl->events)) 
+			{
 				common_timeout_schedule(ctl, &now, ev);
 			}
-		} else {
+		}
+		else 
+		{
 			/* See if the earliest timeout is now earlier than it
 			 * was before: if so, we will need to tell the main
 			 * thread to wake up earlier than it would
 			 * otherwise. */
 			if (min_heap_elt_is_top(ev))
+			{
 				notify = 1;
+			}
 		}
 	}
 
 	/* if we are not in the right thread, we need to wake up the loop */
 	if (res != -1 && notify && EVBASE_NEED_NOTIFY(base))
+	{
 		evthread_notify_base(base);
+	}
 
 	_event_debug_note_add(ev);
 
@@ -2346,8 +2395,7 @@ out:
  * If time is running backwards, we adjust the firing time of every event by
  * the amount that time seems to have jumped.
  */
-static void
-timeout_correct(struct event_base *base, struct timeval *tv)
+static void timeout_correct(struct event_base *base, struct timeval *tv)
 {
 	/* Caller must hold th_base_lock. */
 	struct event **pev;
@@ -2356,12 +2404,15 @@ timeout_correct(struct event_base *base, struct timeval *tv)
 	int i;
 
 	if (use_monotonic)
+	{
 		return;
+	}
 
 	/* Check if time is running backwards */
 	gettime(base, tv);
 
-	if (evutil_timercmp(tv, &base->event_tv, >=)) {
+	if (evutil_timercmp(tv, &base->event_tv, >=)) 
+	{
 		base->event_tv = *tv;
 		return;
 	}
@@ -2399,22 +2450,25 @@ timeout_correct(struct event_base *base, struct timeval *tv)
 }
 
 /* Activate every event whose timeout has elapsed. */
-static void
-timeout_process(struct event_base *base)
+static void timeout_process(struct event_base *base)
 {
 	/* Caller must hold lock. */
 	struct timeval now;
 	struct event *ev;
 
-	if (min_heap_empty(&base->timeheap)) {
+	if (min_heap_empty(&base->timeheap)) 
+	{
 		return;
 	}
 
 	gettime(base, &now);
 
-	while ((ev = min_heap_top(&base->timeheap))) {
-		if (evutil_timercmp(&ev->ev_timeout, &now, >))
+	while ((ev = min_heap_top(&base->timeheap))) 
+	{
+		if (evutil_timercmp(&ev->ev_timeout, &now, > ))
+		{
 			break;
+		}
 
 		/* delete this event from the I/O queues */
 		event_del_internal(ev);

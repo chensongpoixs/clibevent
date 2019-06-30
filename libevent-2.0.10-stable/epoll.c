@@ -142,7 +142,7 @@ static void *epoll_init(struct event_base *base)
 		((base->flags & EVENT_BASE_FLAG_IGNORE_ENV) == 0 &&
 			evutil_getenv("EVENT_EPOLL_USE_CHANGELIST") != NULL))
 	{
-		base->evsel = &epollops_changelist;
+		base->evsel = &epollops_changelist;// epoll ops list
 	}
 	// event 事件使用socket 连接本地通信 --- 
 	evsig_init(base);

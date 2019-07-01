@@ -207,8 +207,7 @@ poll_dispatch(struct event_base *base, struct timeval *tv)
 	return (0);
 }
 
-static int
-poll_add(struct event_base *base, int fd, short old, short events, void *_idx)
+static int poll_add(struct event_base *base, int fd, short old, short events, void *_idx)
 {
 	struct pollop *pop = base->evbase;
 	struct pollfd *pfd = NULL;

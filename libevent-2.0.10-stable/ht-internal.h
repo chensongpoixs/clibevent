@@ -55,8 +55,7 @@
 #define HT_CLEAR(name, head)         name##_HT_CLEAR(head)
 #define HT_INIT(name, head)          name##_HT_INIT(head)
 /* Helper: */
-static inline unsigned
-ht_improve_hash(unsigned h)
+static inline unsigned ht_improve_hash(unsigned h)
 {
   /* Aim to protect against poor hash functions by adding logic here
    * - logic taken from java 1.4 hashtable source */

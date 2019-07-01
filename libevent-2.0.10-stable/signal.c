@@ -115,8 +115,7 @@ static void __cdecl evsig_handler(int sig);
 #define EVSIGBASE_LOCK() EVLOCK_LOCK(evsig_base_lock, 0)
 #define EVSIGBASE_UNLOCK() EVLOCK_UNLOCK(evsig_base_lock, 0)
 
-void
-evsig_set_base(struct event_base *base)
+void evsig_set_base(struct event_base *base)
 {
 	EVSIGBASE_LOCK();
 	evsig_base = base;
@@ -211,8 +210,7 @@ int evsig_init(struct event_base *base)
 
 /* Helper: set the signal handler for evsignal to handler in base, so that
  * we can restore the original handler when we clear the current one. */
-int
-_evsig_set_handler(struct event_base *base,
+int _evsig_set_handler(struct event_base *base,
     int evsignal, void (__cdecl *handler)(int))
 {
 #ifdef _EVENT_HAVE_SIGACTION

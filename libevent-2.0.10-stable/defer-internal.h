@@ -65,6 +65,10 @@ struct deferred_cb_queue {
 	/** Deferred callback management: a list of deferred callbacks to
 	 * run active the active events. */
 	TAILQ_HEAD (deferred_cb_list, deferred_cb) deferred_cb_list;
+	//struct deferred_cb_list {
+	//		struct deferred_cb *tqh_first;	/* first element */		
+	//		struct deferred_cb **tqh_last;	/* addr of last next element */	
+	//}
 };
 
 /**

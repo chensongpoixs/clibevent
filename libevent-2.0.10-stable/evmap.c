@@ -179,13 +179,11 @@ void evmap_io_clear(struct event_io_map *ctx)
 #define GET_IO_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len)	\
 	GET_SIGNAL_SLOT_AND_CTOR(x,map,slot,type,ctor,fdinfo_len)
 #define FDINFO_OFFSET sizeof(struct evmap_io)
-void
-evmap_io_initmap(struct event_io_map* ctx)
+void evmap_io_initmap(struct event_io_map* ctx)
 {
 	evmap_signal_initmap(ctx);
 }
-void
-evmap_io_clear(struct event_io_map* ctx)
+void evmap_io_clear(struct event_io_map* ctx)
 {
 	evmap_signal_clear(ctx);
 }
@@ -224,15 +222,13 @@ static int evmap_make_space(struct event_signal_map *map, int slot, int msize)
 	return (0);
 }
 
-void
-evmap_signal_initmap(struct event_signal_map *ctx)
+void evmap_signal_initmap(struct event_signal_map *ctx)
 {
 	ctx->nentries = 0;
 	ctx->entries = NULL;
 }
 
-void
-evmap_signal_clear(struct event_signal_map *ctx)
+void evmap_signal_clear(struct event_signal_map *ctx)
 {
 	if (ctx->entries != NULL) {
 		int i;
@@ -276,6 +272,7 @@ int evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 		return 0;
 
 #ifndef EVMAP_USE_HT
+	//判断是否需要扩容操作
 	if (fd >= io->nentries) 
 	{
 		if (evmap_make_space(io, fd, sizeof(struct evmap_io *)) == -1)
@@ -379,21 +376,30 @@ int evmap_io_del(struct event_base *base, evutil_socket_t fd, struct event *ev)
 	if (nwrite)
 		old |= EV_WRITE;
 
-	if (ev->ev_events & EV_READ) {
+	if (ev->ev_events & EV_READ) 
+	{
 		if (--nread == 0)
+		{
 			res |= EV_READ;
+		}
 		EVUTIL_ASSERT(nread >= 0);
 	}
-	if (ev->ev_events & EV_WRITE) {
+	if (ev->ev_events & EV_WRITE) 
+	{
 		if (--nwrite == 0)
+		{
 			res |= EV_WRITE;
+		}
 		EVUTIL_ASSERT(nwrite >= 0);
 	}
 
-	if (res) {
+	if (res) 
+	{
 		void *extra = ((char*)ctx) + sizeof(struct evmap_io);
 		if (evsel->del(base, ev->ev_fd, old, res, extra) == -1)
+		{
 			return (-1);
+		}
 		retval = 1;
 	}
 
@@ -427,8 +433,7 @@ void evmap_io_active(struct event_base *base, evutil_socket_t fd, short events)
 
 /* code specific to signals */
 
-static void
-evmap_signal_init(struct evmap_signal *entry)
+static void evmap_signal_init(struct evmap_signal *entry)
 {
 	TAILQ_INIT(&entry->events);
 }
@@ -463,21 +468,25 @@ int evmap_signal_add(struct event_base *base, int sig, struct event *ev)
 	return (1);
 }
 
-int
-evmap_signal_del(struct event_base *base, int sig, struct event *ev)
+int evmap_signal_del(struct event_base *base, int sig, struct event *ev)
 {
 	const struct eventop *evsel = base->evsigsel;
 	struct event_signal_map *map = &base->sigmap;
 	struct evmap_signal *ctx;
 
 	if (sig >= map->nentries)
+	{
 		return (-1);
+	}
 
 	GET_SIGNAL_SLOT(ctx, map, sig, evmap_signal);
 
-	if (TAILQ_FIRST(&ctx->events) == TAILQ_LAST(&ctx->events, event_list)) {
+	if (TAILQ_FIRST(&ctx->events) == TAILQ_LAST(&ctx->events, event_list)) 
+	{
 		if (evsel->del(base, ev->ev_fd, 0, EV_SIGNAL, NULL) == -1)
+		{
 			return (-1);
+		}
 	}
 
 	TAILQ_REMOVE(&ctx->events, ev, ev_signal_next);
@@ -518,8 +527,7 @@ struct event_changelist_fdinfo {
 		       * a no-such-element */
 };
 
-void
-event_changelist_init(struct event_changelist *changelist)
+void event_changelist_init(struct event_changelist *changelist)
 {
 	changelist->changes = NULL;
 	changelist->changes_size = 0;

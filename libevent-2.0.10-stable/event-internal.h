@@ -191,7 +191,7 @@ struct event_base {
 	 * events. */
 	int event_gotterm;
 	/** Set if we should terminate the loop immediately */
-	int event_break;
+	int event_break;  // showdown µÄÊ¹ÓÃ
 
 	/** Set if we're running the event_base_loop function, to prevent
 	 * reentrant invocation. */
@@ -285,7 +285,7 @@ struct event_config_entry {
  * that we're about to allocate. */
 struct event_config {
 	TAILQ_HEAD(event_configq, event_config_entry) entries;
-
+	
 	int n_cpus_hint;
 	enum event_method_feature require_features;
 	enum event_base_config_flag flags;

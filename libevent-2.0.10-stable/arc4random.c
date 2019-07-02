@@ -169,8 +169,7 @@ arc4_seed_win32(void)
 #if defined(_EVENT_HAVE_SYS_SYSCTL_H)
 #if _EVENT_HAVE_DECL_CTL_KERN && _EVENT_HAVE_DECL_KERN_RANDOM && _EVENT_HAVE_DECL_RANDOM_UUID
 #define TRY_SEED_SYSCTL_LINUX
-static int
-arc4_seed_sysctl_linux(void)
+static int arc4_seed_sysctl_linux(void)
 {
 	/* Based on code by William Ahern, this function tries to use the
 	 * RANDOM_UUID sysctl to get entropy from the kernel.  This can work
@@ -184,18 +183,24 @@ arc4_seed_sysctl_linux(void)
 
 	memset(buf, 0, sizeof(buf));
 
-	for (len = 0; len < sizeof(buf); len += n) {
+	for (len = 0; len < sizeof(buf); len += n) 
+	{
 		n = sizeof(buf) - len;
 
 		if (0 != sysctl(mib, 3, &buf[len], &n, NULL, 0))
+		{
 			return -1;
+		}
 	}
 	/* make sure that the buffer actually got set. */
-	for (i=0,any_set=0; i<sizeof(buf); ++i) {
+	for (i=0,any_set=0; i<sizeof(buf); ++i) 
+	{
 		any_set |= buf[i];
 	}
 	if (!any_set)
+	{
 		return -1;
+	}
 
 	arc4_addrandom(buf, sizeof(buf));
 	memset(buf, 0, sizeof(buf));
@@ -206,8 +211,7 @@ arc4_seed_sysctl_linux(void)
 
 #if _EVENT_HAVE_DECL_CTL_KERN && _EVENT_HAVE_DECL_KERN_ARND
 #define TRY_SEED_SYSCTL_BSD
-static int
-arc4_seed_sysctl_bsd(void)
+static int arc4_seed_sysctl_bsd(void)
 {
 	/* Based on code from William Ahern and from OpenBSD, this function
 	 * tries to use the KERN_ARND syscall to get entropy from the kernel.
@@ -221,13 +225,19 @@ arc4_seed_sysctl_bsd(void)
 	memset(buf, 0, sizeof(buf));
 
 	len = sizeof(buf);
-	if (sysctl(mib, 2, buf, &len, NULL, 0) == -1) {
-		for (len = 0; len < sizeof(buf); len += sizeof(unsigned)) {
+	if (sysctl(mib, 2, buf, &len, NULL, 0) == -1) 
+	{
+		for (len = 0; len < sizeof(buf); len += sizeof(unsigned)) 
+		{
 			n = sizeof(unsigned);
 			if (n + len > sizeof(buf))
-			    n = len - sizeof(buf);
+			{
+				n = len - sizeof(buf);
+			}
 			if (sysctl(mib, 2, &buf[len], &n, NULL, 0) == -1)
+			{
 				return -1;
+			}
 		}
 	}
 	/* make sure that the buffer actually got set. */

@@ -44,7 +44,7 @@ void conncb(evutil_socket_t fd, short events, void *arg)
    }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     //1. 创建socket
     int lfd = socket(AF_INET,SOCK_STREAM,0);
@@ -70,7 +70,7 @@ int main()
     struct event_base *base = event_base_new();
     //创建event事件,设置回调函数,事件类型,文件描述符
     //struct event *event_new(struct event_base *, evutil_socket_t, short, event_callback_fn, void *); 
-    struct event *connEv = event_new(base,lfd,EV_READ|EV_PERSIST,conncb,base);
+    struct event *connEv = event_new(base, lfd, EV_READ|EV_PERSIST, conncb, base);
     //设置监听event_add
     // event_add(struct event *ev, const struct timeval *timeout);
     event_add(connEv,NULL);//开始监听新连接事件

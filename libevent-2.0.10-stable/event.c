@@ -478,8 +478,7 @@ static void notify_base_cbq_callback(struct deferred_cb_queue *cb, void *baseptr
 	}
 }
 
-struct deferred_cb_queue *
-event_base_get_deferred_cb_queue(struct event_base *base)
+struct deferred_cb_queue *event_base_get_deferred_cb_queue(struct event_base *base)
 {
 	return base ? &base->defer_queue : NULL;
 }
@@ -1053,8 +1052,7 @@ static int event_haveevents(struct event_base *base)
 }
 
 /* "closure" function called when processing active signal events */
-static inline void
-event_signal_closure(struct event_base *base, struct event *ev)
+static inline void event_signal_closure(struct event_base *base, struct event *ev)
 {
 	short ncalls;
 
@@ -1253,8 +1251,7 @@ done:
 }
 
 /* Closure function invoked when we're activating a persistent event. */
-static inline void
-event_persist_closure(struct event_base *base, struct event *ev)
+static inline void event_persist_closure(struct event_base *base, struct event *ev)
 {
 	/* reschedule the persistent event if we have a timeout. */
 	if (ev->ev_io_timeout.tv_sec || ev->ev_io_timeout.tv_usec) {
@@ -1457,8 +1454,7 @@ int event_base_dispatch(struct event_base *event_base)
 	return (event_base_loop(event_base, 0));
 }
 
-const char *
-event_base_get_method(const struct event_base *base)
+const char *event_base_get_method(const struct event_base *base)
 {
 	EVUTIL_ASSERT(base);
 	return (base->evsel->name);
@@ -1971,8 +1967,7 @@ event_get_callback(const struct event *ev)
 	return ev->ev_callback;
 }
 
-void *
-event_get_callback_arg(const struct event *ev)
+void *event_get_callback_arg(const struct event *ev)
 {
 	_event_debug_assert_is_setup(ev);
 	return ev->ev_arg;
@@ -2720,8 +2715,7 @@ const char *event_get_version(void)
 	return (_EVENT_VERSION);
 }
 
-ev_uint32_t
-event_get_version_number(void)
+ev_uint32_t event_get_version_number(void)
 {
 	return (_EVENT_NUMERIC_VERSION);
 }
@@ -2798,8 +2792,7 @@ event_mm_free_(void *ptr)
 		free(ptr);
 }
 
-void
-event_set_mem_functions(void *(*malloc_fn)(size_t sz),
+void event_set_mem_functions(void *(*malloc_fn)(size_t sz),
 			void *(*realloc_fn)(void *ptr, size_t sz),
 			void (*free_fn)(void *ptr))
 {
@@ -2810,8 +2803,7 @@ event_set_mem_functions(void *(*malloc_fn)(size_t sz),
 #endif
 
 #if defined(_EVENT_HAVE_EVENTFD) && defined(_EVENT_HAVE_SYS_EVENTFD_H)
-static void
-evthread_notify_drain_eventfd(evutil_socket_t fd, short what, void *arg)
+static void evthread_notify_drain_eventfd(evutil_socket_t fd, short what, void *arg)
 {
 	ev_uint64_t msg;
 	ev_ssize_t r;
@@ -2949,7 +2941,8 @@ void event_base_dump_events(struct event_base *base, FILE *output)
 				(e->ev_events&EV_PERSIST)?" Persist":"");
 
 	}
-	for (i = 0; i < base->nactivequeues; ++i) {
+	for (i = 0; i < base->nactivequeues; ++i) 
+	{
 		if (TAILQ_EMPTY(&base->activequeues[i]))
 			continue;
 		fprintf(output, "Active events [priority %d]:\n", i);
@@ -2964,21 +2957,21 @@ void event_base_dump_events(struct event_base *base, FILE *output)
 	}
 }
 
-void
-event_base_add_virtual(struct event_base *base)
+void event_base_add_virtual(struct event_base *base)
 {
 	EVBASE_ACQUIRE_LOCK(base, th_base_lock);
 	base->virtual_event_count++;
 	EVBASE_RELEASE_LOCK(base, th_base_lock);
 }
 
-void
-event_base_del_virtual(struct event_base *base)
+void event_base_del_virtual(struct event_base *base)
 {
 	EVBASE_ACQUIRE_LOCK(base, th_base_lock);
 	EVUTIL_ASSERT(base->virtual_event_count > 0);
 	base->virtual_event_count--;
 	if (base->virtual_event_count == 0 && EVBASE_NEED_NOTIFY(base))
+	{
 		evthread_notify_base(base);
+	}
 	EVBASE_RELEASE_LOCK(base, th_base_lock);
 }

@@ -516,7 +516,7 @@ static int epoll_dispatch(struct event_base *base, struct timeval *tv)
 		{
 			continue;
 		}
-
+		// event 通知事件
 		evmap_io_active(base, events[i].data.fd, ev | EV_ET);
 	}
 	// 扩容2倍增加反应堆的数量

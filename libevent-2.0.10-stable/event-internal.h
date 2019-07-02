@@ -166,9 +166,9 @@ extern int _event_debug_mode_on;
 struct event_base {
 	/** Function pointers and other data to describe this event_base's
 	 * backend. */
-	const struct eventop *evsel;
+	const struct eventop *evsel;  // epollops_changelist
 	/** Pointer to backend-specific data. */
-	void *evbase;
+	void *evbase;// io 函数 -> epoll_init -----> epoll init
 
 	/** List of changes to tell backend about at next dispatch.  Only used
 	 * by the O(1) backends. */
@@ -185,7 +185,7 @@ struct event_base {
 	/** Number of total events added to this event_base */
 	int event_count;
 	/** Number of total events active in this event_base */
-	int event_count_active;
+	int event_count_active; // 反应堆的数量
 
 	/** Set if we should terminate the loop once we're done processing
 	 * events. */
@@ -272,7 +272,7 @@ struct event_base {
 	 * thread. */
 	struct event th_notify;
 	/** A function used to wake up the main thread from another thread. */
-	int (*th_notify_fn)(struct event_base *base);
+	int (*th_notify_fn)(struct event_base *base); // evthread_notify_base_default send write
 };
 
 struct event_config_entry {

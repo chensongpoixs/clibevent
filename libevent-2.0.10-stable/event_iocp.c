@@ -164,8 +164,7 @@ event_get_win32_extension_fns(void)
 
 #define N_CPUS_DEFAULT 2
 
-struct event_iocp_port *
-event_iocp_port_launch(int n_cpus)
+struct event_iocp_port * event_iocp_port_launch(int n_cpus)
 {
 	struct event_iocp_port *port;
 	int i;
@@ -215,8 +214,7 @@ err:
 	return NULL;
 }
 
-static void
-_event_iocp_port_unlock_and_free(struct event_iocp_port *port)
+static void _event_iocp_port_unlock_and_free(struct event_iocp_port *port)
 {
 	DeleteCriticalSection(&port->lock);
 	CloseHandle(port->port);

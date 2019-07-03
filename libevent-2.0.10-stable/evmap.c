@@ -198,22 +198,22 @@ static int evmap_make_space(struct event_signal_map *map, int slot, int msize)
 	// 扩容操作
 	if (map->nentries <= slot) 
 	{
+		// 1. 默认 值是32 
 		int nentries = map->nentries ? map->nentries : 32;
 		void **tmp;
-
+		// 2. 2的次方扩容
 		while (nentries <= slot)
 		{
 			nentries <<= 1;
 		}
-
+		// 3. 申请内存 
 		tmp = (void **)mm_realloc(map->entries, nentries * msize);
 		if (tmp == NULL)
 		{
 			return (-1);
 		}
 
-		memset(&tmp[map->nentries], 0,
-		    (nentries - map->nentries) * msize);
+		memset(&tmp[map->nentries], 0, (nentries - map->nentries) * msize);
 
 		map->nentries = nentries;
 		map->entries = tmp;
@@ -246,8 +246,7 @@ void evmap_signal_clear(struct event_signal_map *ctx)
 /* code specific to file descriptors */
 
 /** Constructor for struct evmap_io */
-static void
-evmap_io_init(struct evmap_io *entry)
+static void evmap_io_init(struct evmap_io *entry)
 {
 	TAILQ_INIT(&entry->events);
 	entry->nread = 0;
@@ -269,7 +268,9 @@ int evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 	EVUTIL_ASSERT(fd == ev->ev_fd);
 
 	if (fd < 0)
+	{
 		return 0;
+	}
 
 #ifndef EVMAP_USE_HT
 	//判断是否需要扩容操作
@@ -645,21 +646,24 @@ event_changelist_grow(struct event_changelist *changelist)
  * 'fd', whose fdinfo is 'fdinfo'.  If none exists, construct it, setting its
  * old_events field to old_events.
  */
-static struct event_change *
-event_changelist_get_or_construct(struct event_changelist *changelist,
+static struct event_change *event_changelist_get_or_construct(struct event_changelist *changelist,
     evutil_socket_t fd,
     short old_events,
     struct event_changelist_fdinfo *fdinfo)
 {
 	struct event_change *change;
 
-	if (fdinfo->idxplus1 == 0) {
+	if (fdinfo->idxplus1 == 0) 
+	{
 		int idx;
 		EVUTIL_ASSERT(changelist->n_changes <= changelist->changes_size);
 
-		if (changelist->n_changes == changelist->changes_size) {
+		if (changelist->n_changes == changelist->changes_size) 
+		{
 			if (event_changelist_grow(changelist) < 0)
+			{
 				return NULL;
+			}
 		}
 
 		idx = changelist->n_changes++;
@@ -669,15 +673,16 @@ event_changelist_get_or_construct(struct event_changelist *changelist,
 		memset(change, 0, sizeof(struct event_change));
 		change->fd = fd;
 		change->old_events = old_events;
-	} else {
+	}
+	else 
+	{
 		change = &changelist->changes[fdinfo->idxplus1 - 1];
 		EVUTIL_ASSERT(change->fd == fd);
 	}
 	return change;
 }
 
-int
-event_changelist_add(struct event_base *base, evutil_socket_t fd, short old, short events,
+int event_changelist_add(struct event_base *base, evutil_socket_t fd, short old, short events,
     void *p)
 {
 	struct event_changelist *changelist = &base->changelist;
@@ -688,7 +693,9 @@ event_changelist_add(struct event_base *base, evutil_socket_t fd, short old, sho
 
 	change = event_changelist_get_or_construct(changelist, fd, old, fdinfo);
 	if (!change)
+	{
 		return -1;
+	}
 
 	/* An add replaces any previous delete, but doesn't result in a no-op,
 	 * since the delete might fail (because the fd had been closed since

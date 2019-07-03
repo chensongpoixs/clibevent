@@ -95,7 +95,7 @@ struct eventop {
 	    as part of the evmap entry for each fd, and passed as an argument
 	    to the add and del functions above.
 	 */
-	size_t fdinfo_len;
+	size_t fdinfo_len;  // 相当于 fd_set函数中 m_count 中文件描述符的数量
 };
 
 #ifdef WIN32
@@ -123,7 +123,7 @@ HT_HEAD(event_io_map, event_map_entry);
 struct event_signal_map {
 	/* An array of evmap_io * or of evmap_signal *; empty entries are
 	 * set to NULL. */
-	void **entries;  // 二维数组
+	void **entries;  // 二维数组 io_map
 	/* The number of entries available in entries */
 	int nentries;
 };

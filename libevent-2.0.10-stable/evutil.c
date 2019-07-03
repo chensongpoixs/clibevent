@@ -272,13 +272,21 @@ int evutil_ersatz_socketpair(int family, int type, int protocol,
 	saved_errno = ERR(ECONNABORTED);
  tidy_up_and_fail:
 	if (saved_errno < 0)
+	{
 		saved_errno = EVUTIL_SOCKET_ERROR();
+	}
 	if (listener != -1)
+	{
 		evutil_closesocket(listener);
+	}
 	if (connector != -1)
+	{
 		evutil_closesocket(connector);
+	}
 	if (acceptor != -1)
+	{
 		evutil_closesocket(acceptor);
+	}
 
 	EVUTIL_SET_SOCKET_ERROR(saved_errno);
 	return -1;
@@ -298,11 +306,13 @@ int evutil_make_socket_nonblocking(evutil_socket_t fd)
 #else
 	{
 		int flags;
-		if ((flags = fcntl(fd, F_GETFL, NULL)) < 0) {
+		if ((flags = fcntl(fd, F_GETFL, NULL)) < 0)
+		{
 			event_warn("fcntl(%d, F_GETFL)", fd);
 			return -1;
 		}
-		if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+		if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) 
+		{
 			event_warn("fcntl(%d, F_SETFL)", fd);
 			return -1;
 		}

@@ -568,8 +568,7 @@ struct event_base *event_base_new_with_config(const struct event_config *cfg)
 
 	base->evbase = NULL;
 
-	should_check_environment =
-	    !(cfg && (cfg->flags & EVENT_BASE_FLAG_IGNORE_ENV));
+	should_check_environment = !(cfg && (cfg->flags & EVENT_BASE_FLAG_IGNORE_ENV));
 	// 10. eventops 是对 epoll, select, poll 和iocp等等封装  io的的初始化
 	for (i = 0; eventops[i] && !base->evbase; i++) 
 	{
@@ -628,8 +627,7 @@ struct event_base *event_base_new_with_config(const struct event_config *cfg)
 	if (!cfg || !(cfg->flags & EVENT_BASE_FLAG_NOLOCK)) 
 	{
 		int r;
-		EVTHREAD_ALLOC_LOCK(base->th_base_lock,
-		    EVTHREAD_LOCKTYPE_RECURSIVE);
+		EVTHREAD_ALLOC_LOCK(base->th_base_lock, EVTHREAD_LOCKTYPE_RECURSIVE);
 		base->defer_queue.lock = base->th_base_lock;
 		EVTHREAD_ALLOC_COND(base->current_event_cond);
 		// 11. 设置 本地 event通知事件
@@ -999,8 +997,7 @@ event_config_set_num_cpus_hint(struct event_config *cfg, int cpus)
 	return (0);
 }
 
-int
-event_priority_init(int npriorities)
+int event_priority_init(int npriorities)
 {
 	return event_base_priority_init(current_base, npriorities);
 }
@@ -1027,8 +1024,7 @@ int event_base_priority_init(struct event_base *base, int npriorities)
 	}
 
 	/* Allocate our priority queues */
-	base->activequeues = (struct event_list *)
-	  mm_calloc(npriorities, sizeof(struct event_list));
+	base->activequeues = (struct event_list *)mm_calloc(npriorities, sizeof(struct event_list));
 	if (base->activequeues == NULL) 
 	{
 		event_warn("%s: calloc", __func__);
@@ -1098,13 +1094,14 @@ static inline void event_signal_closure(struct event_base *base, struct event *e
 	(((tv)->tv_usec & COMMON_TIMEOUT_IDX_MASK)>>COMMON_TIMEOUT_IDX_SHIFT)
 
 /** Return true iff if 'tv' is a common timeout in 'base' */
-static inline int
-is_common_timeout(const struct timeval *tv,
+static inline int is_common_timeout(const struct timeval *tv,
     const struct event_base *base)
 {
 	int idx;
 	if ((tv->tv_usec & COMMON_TIMEOUT_MASK) != COMMON_TIMEOUT_MAGIC)
+	{
 		return 0;
+	}
 	idx = COMMON_TIMEOUT_IDX(tv);
 	return idx < base->n_common_timeouts;
 }
@@ -1120,8 +1117,7 @@ is_same_common_timeout(const struct timeval *tv1, const struct timeval *tv2)
 
 /** Requires that 'tv' is a common timeout.  Return the corresponding
  * common_timeout_list. */
-static inline struct common_timeout_list *
-get_common_timeout_list(struct event_base *base, const struct timeval *tv)
+static inline struct common_timeout_list *get_common_timeout_list(struct event_base *base, const struct timeval *tv)
 {
 	return base->common_timeout_queues[COMMON_TIMEOUT_IDX(tv)];
 }
@@ -1674,8 +1670,7 @@ event_once_cb(evutil_socket_t fd, short events, void *arg)
 }
 
 /* not threadsafe, event scheduled once. */
-int
-event_once(evutil_socket_t fd, short events,
+int event_once(evutil_socket_t fd, short events,
     void (*callback)(evutil_socket_t, short, void *),
     void *arg, const struct timeval *tv)
 {
@@ -1683,8 +1678,7 @@ event_once(evutil_socket_t fd, short events,
 }
 
 /* Schedules an event once */
-int
-event_base_once(struct event_base *base, evutil_socket_t fd, short events,
+int event_base_once(struct event_base *base, evutil_socket_t fd, short events,
     void (*callback)(evutil_socket_t, short, void *),
     void *arg, const struct timeval *tv)
 {
@@ -1694,35 +1688,48 @@ event_base_once(struct event_base *base, evutil_socket_t fd, short events,
 
 	/* We cannot support signals that just fire once, or persistent
 	 * events. */
-	if (events & (EV_SIGNAL|EV_PERSIST))
+	if (events & (EV_SIGNAL | EV_PERSIST))
+	{
 		return (-1);
+	}
 
 	if ((eonce = mm_calloc(1, sizeof(struct event_once))) == NULL)
+	{
 		return (-1);
+	}
 
 	eonce->cb = callback;
 	eonce->arg = arg;
 
-	if (events == EV_TIMEOUT) {
-		if (tv == NULL) {
+	if (events == EV_TIMEOUT) 
+	{
+		if (tv == NULL) 
+		{
 			evutil_timerclear(&etv);
 			tv = &etv;
 		}
 
 		evtimer_assign(&eonce->ev, base, event_once_cb, eonce);
-	} else if (events & (EV_READ|EV_WRITE)) {
+	}
+	else if (events & (EV_READ|EV_WRITE)) 
+	{
 		events &= EV_READ|EV_WRITE;
 
 		event_assign(&eonce->ev, base, fd, events, event_once_cb, eonce);
-	} else {
+	}
+	else 
+	{
 		/* Bad event combination */
 		mm_free(eonce);
 		return (-1);
 	}
 
 	if (res == 0)
+	{
 		res = event_add(&eonce->ev, tv);
-	if (res != 0) {
+	}
+	if (res != 0) 
+	{
 		mm_free(eonce);
 		return (res);
 	}
@@ -1803,8 +1810,7 @@ int event_base_set(struct event_base *base, struct event *ev)
 	return (0);
 }
 
-void
-event_set(struct event *ev, evutil_socket_t fd, short events,
+void event_set(struct event *ev, evutil_socket_t fd, short events,
 	  void (*callback)(evutil_socket_t, short, void *), void *arg)
 {
 	int r;
@@ -1960,8 +1966,7 @@ event_get_events(const struct event *ev)
 	return ev->ev_events;
 }
 
-event_callback_fn
-event_get_callback(const struct event *ev)
+event_callback_fn event_get_callback(const struct event *ev)
 {
 	_event_debug_assert_is_setup(ev);
 	return ev->ev_callback;
@@ -2076,6 +2081,7 @@ static inline int event_add_internal(struct event *ev, const struct timeval *tv,
 	// 1. 添加计时器到哈希表中
 	if (tv != NULL && !(ev->ev_flags & EVLIST_TIMEOUT)) 
 	{
+		// 1.1 扩容操作
 		if (min_heap_reserve(&base->timeheap,
 			1 + min_heap_size(&base->timeheap)) == -1)
 		{
@@ -2693,8 +2699,7 @@ static void event_queue_insert(struct event_base *base, struct event *ev, int qu
 	{
 		if (is_common_timeout(&ev->ev_timeout, base)) 
 		{
-			struct common_timeout_list *ctl =
-			    get_common_timeout_list(base, &ev->ev_timeout);
+			struct common_timeout_list *ctl = get_common_timeout_list(base, &ev->ev_timeout);
 			insert_common_timeout_inorder(ctl, ev);
 		}
 		else
@@ -2736,37 +2741,49 @@ static void *(*_mm_malloc_fn)(size_t sz) = NULL;
 static void *(*_mm_realloc_fn)(void *p, size_t sz) = NULL;
 static void (*_mm_free_fn)(void *p) = NULL;
 
-void *
-event_mm_malloc_(size_t sz)
+void *event_mm_malloc_(size_t sz)
 {
 	if (_mm_malloc_fn)
+	{
 		return _mm_malloc_fn(sz);
+	}
 	else
+	{
 		return malloc(sz);
+	}
 }
 
 void *event_mm_calloc_(size_t count, size_t size)
 {
-	if (_mm_malloc_fn) {
+	if (_mm_malloc_fn) 
+	{
 		size_t sz = count * size;
 		void *p = _mm_malloc_fn(sz);
 		if (p)
+		{
 			memset(p, 0, sz);
+		}
 		return p;
-	} else
+	}
+	else
+	{
 		return calloc(count, size);
+	}
 }
 
-char *
-event_mm_strdup_(const char *str)
+char *event_mm_strdup_(const char *str)
 {
-	if (_mm_malloc_fn) {
+	if (_mm_malloc_fn) 
+	{
 		size_t ln = strlen(str);
-		void *p = _mm_malloc_fn(ln+1);
+		void *p = _mm_malloc_fn(ln + 1);
 		if (p)
-			memcpy(p, str, ln+1);
+		{
+			memcpy(p, str, ln + 1);
+		}
 		return p;
-	} else
+	} 
+	else
 #ifdef WIN32
 		return _strdup(str);
 #else
@@ -2774,22 +2791,28 @@ event_mm_strdup_(const char *str)
 #endif
 }
 
-void *
-event_mm_realloc_(void *ptr, size_t sz)
+void *event_mm_realloc_(void *ptr, size_t sz)
 {
 	if (_mm_realloc_fn)
+	{
 		return _mm_realloc_fn(ptr, sz);
+	}
 	else
+	{
 		return realloc(ptr, sz);
+	}
 }
 
-void
-event_mm_free_(void *ptr)
+void event_mm_free_(void *ptr)
 {
 	if (_mm_free_fn)
+	{
 		_mm_free_fn(ptr);
+	}
 	else
+	{
 		free(ptr);
+	}
 }
 
 void event_set_mem_functions(void *(*malloc_fn)(size_t sz),
@@ -2887,12 +2910,16 @@ int evthread_make_base_notifiable(struct event_base *base)
 #else
 #define LOCAL_SOCKETPAIR_AF AF_UNIX
 #endif
-	if (base->th_notify_fd[0] < 0) {
+	if (base->th_notify_fd[0] < 0) 
+	{
 		if (evutil_socketpair(LOCAL_SOCKETPAIR_AF, SOCK_STREAM, 0,
-			base->th_notify_fd) == -1) {
+			base->th_notify_fd) == -1) 
+		{
 			event_sock_warn(-1, "%s: socketpair", __func__);
 			return (-1);
-		} else {
+		}
+		else 
+		{
 			evutil_make_socket_closeonexec(base->th_notify_fd[0]);
 			evutil_make_socket_closeonexec(base->th_notify_fd[1]);
 		}

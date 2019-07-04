@@ -156,8 +156,7 @@ event_msgx(const char *fmt, ...)
 	va_end(ap);
 }
 
-void
-_event_debugx(const char *fmt, ...)
+void _event_debugx(const char *fmt, ...)
 {
 	va_list ap;
 

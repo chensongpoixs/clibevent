@@ -400,7 +400,8 @@ static int epoll_apply_changes(struct event_base *base)
 
 	for (i = 0; i < changelist->n_changes; ++i) 
 	{
-		ch = &changelist->changes[i];
+		//得到 一个文件描述符的事件状态 
+		ch = &changelist->changes[i]; 
 		if (epoll_apply_one_change(base, epollop, ch) < 0)
 		{
 			r = -1;

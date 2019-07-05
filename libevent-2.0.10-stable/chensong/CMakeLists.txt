@@ -8,13 +8,6 @@ SET(CMAKE_BUILD_TYPE Release)
 #
 INCLUDE_DIRECTORIES(
 					${PROJECT_SOURCE_DIR}/../include
-#					/usr/local/include
-#					${EXTRA_INC_DIR}/include
-#					${PROJECT_SOURCE_DIR}/clib
-#					${PROJECT_SOURCE_DIR}/common
-#					${PROJECT_SOURCE_DIR}/common/cmsg
-#					${PROJECT_SOURCE_DIR}/common/cmessage
-#					#${PROJECT_SOURCE_DIR}/Robot
 					)
 
 
@@ -24,21 +17,16 @@ INCLUDE_DIRECTORIES(
 #SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/linux)
 
 LINK_DIRECTORIES(
-				
-#				/usr/local/lib
-#				/usr/local/lib64
-#				/usr/lib/x86_64-linux-gnu
-#				${PROJECT_SOURCE_DIR}/linux/lib
 				${PROJECT_SOURCE_DIR}/../lib
 				)
-file(GLOB ALL_CXX_SRCS
-		./*.cpp  ./*.cc
-		./*.c
+file(GLOB ALL_CXX_SRCS1
+		main.c
+		)
+		
+file(GLOB ALL_CXX_SRCS2
+		cthread_event.c
 		)
 
-add_executable(${PROJECT_NAME} ${ALL_CXX_SRCS})
-#add_dependencies(${PROJECT_NAME} common)
-#add_dependencies(${PROJECT_NAME} clib)
 
 set(ALL_LIB
 		pthread
@@ -47,23 +35,12 @@ set(ALL_LIB
 		libevent_extra.a  
 		libevent_openssl.a  
 		libevent_pthreads.a
-#		libcommon.a
-#		libclib.a
-#		libprotobuf-lite.a
-#		libthrift.a
-#		libmysqlclient.so
-#		libjsoncpp.a
-#		libboost_locale.a
-#		libboost_regex.a
-#		libboost_system.a
-#		libboost_filesystem.a
-
 		)
 
+add_executable(main ${ALL_CXX_SRCS1})
+target_link_libraries(main ${ALL_LIB})
+add_executable(cthread_event ${ALL_CXX_SRCS2})
+target_link_libraries(cthread_event ${ALL_LIB})
 
-target_link_libraries(${PROJECT_NAME} ${ALL_LIB})
 				
-#add_subdirectory(clib)
-#add_subdirectory(common)
-#add_subdirectory(gateway)
-#add_subdirectory(Robot)
+

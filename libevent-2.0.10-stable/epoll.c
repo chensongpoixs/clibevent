@@ -137,7 +137,7 @@ static void *epoll_init(struct event_base *base)
 		return (NULL);
 	}
 	epollop->nevents = INITIAL_NEVENT;
-
+	// Ä¬ÈÏepoll
 	if ((base->flags & EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST) != 0 ||
 		((base->flags & EVENT_BASE_FLAG_IGNORE_ENV) == 0 &&
 			evutil_getenv("EVENT_EPOLL_USE_CHANGELIST") != NULL))

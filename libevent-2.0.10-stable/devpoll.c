@@ -247,8 +247,7 @@ devpoll_add(struct event_base *base, int fd, short old, short events, void *p)
 	return (0);
 }
 
-static int
-devpoll_del(struct event_base *base, int fd, short old, short events, void *p)
+static int devpoll_del(struct event_base *base, int fd, short old, short events, void *p)
 {
 	struct devpollop *devpollop = base->evbase;
 	int res;

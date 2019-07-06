@@ -164,8 +164,7 @@ void evmap_io_clear(struct event_io_map *ctx)
 	do {								\
 		if ((map)->entries[slot] == NULL) {			\
 			EVUTIL_ASSERT(ctor != NULL);				\
-			(map)->entries[slot] =				\
-			    mm_calloc(1,sizeof(struct type)+fdinfo_len); \
+			(map)->entries[slot] =	mm_calloc(1,sizeof(struct type)+fdinfo_len); \
 			EVUTIL_ASSERT((map)->entries[slot] != NULL);		\
 			(ctor)((struct type *)(map)->entries[slot]);	\
 		}							\
@@ -230,11 +229,14 @@ void evmap_signal_initmap(struct event_signal_map *ctx)
 
 void evmap_signal_clear(struct event_signal_map *ctx)
 {
-	if (ctx->entries != NULL) {
-		int i;
-		for (i = 0; i < ctx->nentries; ++i) {
+	if (ctx->entries != NULL) 
+	{
+		for (int i = 0; i < ctx->nentries; ++i)
+		{
 			if (ctx->entries[i] != NULL)
+			{
 				mm_free(ctx->entries[i]);
+			}
 		}
 		mm_free(ctx->entries);
 		ctx->entries = NULL;
@@ -282,6 +284,7 @@ int evmap_io_add(struct event_base *base, evutil_socket_t fd, struct event *ev)
 		}
 	}
 #endif
+	// 把文件描述符放到槽中或者查找
 	GET_IO_SLOT_AND_CTOR(ctx, io, fd, evmap_io, evmap_io_init,
 						 evsel->fdinfo_len);
 
@@ -620,8 +623,7 @@ event_changelist_freemem(struct event_changelist *changelist)
 }
 
 /** Increase the size of 'changelist' to hold more changes. */
-static int
-event_changelist_grow(struct event_changelist *changelist)
+static int event_changelist_grow(struct event_changelist *changelist)
 {
 	int new_size;
 	struct event_change *new_changes;
@@ -701,11 +703,13 @@ int event_changelist_add(struct event_base *base, evutil_socket_t fd, short old,
 	 * since the delete might fail (because the fd had been closed since
 	 * the last add, for instance. */
 
-	if (events & (EV_READ|EV_SIGNAL)) {
+	if (events & (EV_READ|EV_SIGNAL)) 
+	{
 		change->read_change = EV_CHANGE_ADD |
 		    (events & (EV_ET|EV_PERSIST|EV_SIGNAL));
 	}
-	if (events & EV_WRITE) {
+	if (events & EV_WRITE)
+	{
 		change->write_change = EV_CHANGE_ADD |
 		    (events & (EV_ET|EV_PERSIST|EV_SIGNAL));
 	}
@@ -714,8 +718,7 @@ int event_changelist_add(struct event_base *base, evutil_socket_t fd, short old,
 	return (0);
 }
 
-int
-event_changelist_del(struct event_base *base, evutil_socket_t fd, short old, short events,
+int event_changelist_del(struct event_base *base, evutil_socket_t fd, short old, short events,
     void *p)
 {
 	struct event_changelist *changelist = &base->changelist;

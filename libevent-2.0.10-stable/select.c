@@ -91,8 +91,7 @@ const struct eventop selectops = {
 
 static int select_resize(struct selectop *sop, int fdsz);
 
-static void *
-select_init(struct event_base *base)
+static void *select_init(struct event_base *base)
 {
 	struct selectop *sop;
 
@@ -267,8 +266,7 @@ select_add(struct event_base *base, int fd, short old, short events, void *p)
  * Nothing to be done here.
  */
 
-static int
-select_del(struct event_base *base, int fd, short old, short events, void *p)
+static int select_del(struct event_base *base, int fd, short old, short events, void *p)
 {
 	struct selectop *sop = base->evbase;
 	(void)p;

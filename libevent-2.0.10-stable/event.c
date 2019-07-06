@@ -158,8 +158,7 @@ struct event_debug_entry {
 	unsigned added : 1;
 };
 
-static inline unsigned
-hash_debug_entry(const struct event_debug_entry *e)
+static inline unsigned hash_debug_entry(const struct event_debug_entry *e)
 {
 	/* We need to do this silliness to convince compilers that we
 	 * honestly mean to cast e->ptr to an integer, and discard any
@@ -172,8 +171,7 @@ hash_debug_entry(const struct event_debug_entry *e)
 	return (u >> 6);
 }
 
-static inline int
-eq_debug_entry(const struct event_debug_entry *a,
+static inline int eq_debug_entry(const struct event_debug_entry *a,
     const struct event_debug_entry *b)
 {
 	return a->ptr == b->ptr;
@@ -361,8 +359,7 @@ static int gettime(struct event_base *base, struct timeval *tp)
 	return (evutil_gettimeofday(tp, NULL));
 }
 
-int
-event_base_gettimeofday_cached(struct event_base *base, struct timeval *tv)
+int event_base_gettimeofday_cached(struct event_base *base, struct timeval *tv)
 {
 	int r;
 	if (!base) {
@@ -414,6 +411,7 @@ struct event_base *event_base_new(void)
 	struct event_config *cfg = event_config_new();
 	if (cfg) 
 	{
+		printf("[%s][%d] flags = %d\n", __PRETTY_FUNCTION__, __LINE__, cfg->flags);
 		// 设置event的通知事件
 		base = event_base_new_with_config(cfg);
 		// 释放配置文件分配的内存
@@ -954,11 +952,12 @@ void event_config_free(struct event_config *cfg)
 	mm_free(cfg);
 }
 
-int
-event_config_set_flag(struct event_config *cfg, int flag)
+int event_config_set_flag(struct event_config *cfg, int flag)
 {
 	if (!cfg)
+	{
 		return -1;
+	}
 	cfg->flags |= flag;
 	return 0;
 }
@@ -1782,7 +1781,7 @@ int event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, 
 			ev->ev_closure = EV_CLOSURE_NONE;
 		}
 	}
-	// 
+	// --最小堆的使用
 	min_heap_elem_init(ev);
 
 	if (base != NULL) 

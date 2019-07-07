@@ -21,7 +21,8 @@ void readcb(evutil_socket_t fd, short events, void *arg)
 		event_free(readEv);
 		readEv = NULL;
 	}
-	else {
+	else 
+	{
 		perror("recv err");
 		close(fd);
 		event_del(readEv);

@@ -22,6 +22,9 @@
     <Filter Include="compat\sys">
       <UniqueIdentifier>{caa7d936-3384-4fac-a5d9-1cc8e3f85169}</UniqueIdentifier>
     </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{48cdb853-aa47-4264-b80f-ffac6f675111}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chensong\main.c">
@@ -61,6 +64,93 @@
     <ClCompile Include="signal.c" />
     <ClCompile Include="strlcpy.c" />
     <ClCompile Include="win32select.c" />
+    <ClCompile Include="test\bench.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\bench_cascade.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\bench_http.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\bench_httpclient.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress.gen.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_buffer.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_bufferevent.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_dns.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_et.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_http.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_iocp.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_listener.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_main.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_minheap.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_rpc.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_ssl.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_testutils.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_thread.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_util.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\regress_zlib.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test-changelist.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test-eof.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test-init.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test-ratelim.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test-time.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test-weof.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\tinytest.c">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="chensong\cthread_event.c">
+      <Filter>chensong</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bufferevent-internal.h" />
@@ -167,5 +257,43 @@
     <ClInclude Include="compat\sys\queue.h">
       <Filter>compat\sys</Filter>
     </ClInclude>
+    <ClInclude Include="test\regress.gen.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\regress.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\regress_testutils.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\tinytest.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\tinytest_local.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\tinytest_macros.h">
+      <Filter>test</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="chensong\README.md">
+      <Filter>chensong</Filter>
+    </None>
+    <None Include="test\Makefile.am">
+      <Filter>test</Filter>
+    </None>
+    <None Include="test\Makefile.in">
+      <Filter>test</Filter>
+    </None>
+    <None Include="test\Makefile.nmake">
+      <Filter>test</Filter>
+    </None>
+    <None Include="test\regress.rpc">
+      <Filter>test</Filter>
+    </None>
+    <None Include="test\test.sh">
+      <Filter>test</Filter>
+    </None>
   </ItemGroup>
 </Project>

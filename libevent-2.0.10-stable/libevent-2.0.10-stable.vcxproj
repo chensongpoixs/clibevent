@@ -135,6 +135,7 @@
     <ClCompile Include="bufferevent_ratelim.c" />
     <ClCompile Include="bufferevent_sock.c" />
     <ClCompile Include="buffer_iocp.c" />
+    <ClCompile Include="chensong\cthread_event.c" />
     <ClCompile Include="chensong\main.c" />
     <ClCompile Include="devpoll.c" />
     <ClCompile Include="epoll.c" />
@@ -159,6 +160,34 @@
     <ClCompile Include="select.c" />
     <ClCompile Include="signal.c" />
     <ClCompile Include="strlcpy.c" />
+    <ClCompile Include="test\bench.c" />
+    <ClCompile Include="test\bench_cascade.c" />
+    <ClCompile Include="test\bench_http.c" />
+    <ClCompile Include="test\bench_httpclient.c" />
+    <ClCompile Include="test\regress.c" />
+    <ClCompile Include="test\regress.gen.c" />
+    <ClCompile Include="test\regress_buffer.c" />
+    <ClCompile Include="test\regress_bufferevent.c" />
+    <ClCompile Include="test\regress_dns.c" />
+    <ClCompile Include="test\regress_et.c" />
+    <ClCompile Include="test\regress_http.c" />
+    <ClCompile Include="test\regress_iocp.c" />
+    <ClCompile Include="test\regress_listener.c" />
+    <ClCompile Include="test\regress_main.c" />
+    <ClCompile Include="test\regress_minheap.c" />
+    <ClCompile Include="test\regress_rpc.c" />
+    <ClCompile Include="test\regress_ssl.c" />
+    <ClCompile Include="test\regress_testutils.c" />
+    <ClCompile Include="test\regress_thread.c" />
+    <ClCompile Include="test\regress_util.c" />
+    <ClCompile Include="test\regress_zlib.c" />
+    <ClCompile Include="test\test-changelist.c" />
+    <ClCompile Include="test\test-eof.c" />
+    <ClCompile Include="test\test-init.c" />
+    <ClCompile Include="test\test-ratelim.c" />
+    <ClCompile Include="test\test-time.c" />
+    <ClCompile Include="test\test-weof.c" />
+    <ClCompile Include="test\tinytest.c" />
     <ClCompile Include="win32select.c" />
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +238,23 @@
     <ClInclude Include="mm-internal.h" />
     <ClInclude Include="ratelim-internal.h" />
     <ClInclude Include="strlcpy-internal.h" />
+    <ClInclude Include="test\regress.gen.h" />
+    <ClInclude Include="test\regress.h" />
+    <ClInclude Include="test\regress_testutils.h" />
+    <ClInclude Include="test\tinytest.h" />
+    <ClInclude Include="test\tinytest_local.h" />
+    <ClInclude Include="test\tinytest_macros.h" />
     <ClInclude Include="util-internal.h" />
     <ClInclude Include="WIN32-Code\event2\event-config.h" />
     <ClInclude Include="WIN32-Code\tree.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="chensong\README.md" />
+    <None Include="test\Makefile.am" />
+    <None Include="test\Makefile.in" />
+    <None Include="test\Makefile.nmake" />
+    <None Include="test\regress.rpc" />
+    <None Include="test\test.sh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

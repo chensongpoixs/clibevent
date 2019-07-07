@@ -626,10 +626,13 @@ struct event_base *event_base_new_with_config(const struct event_config *cfg)
 	{
 		int r;
 		// std::mutux
+		printf("[%s][%d] std::mutux start \n", __PRETTY_FUNCTION__, __LINE__);
 		EVTHREAD_ALLOC_LOCK(base->th_base_lock, EVTHREAD_LOCKTYPE_RECURSIVE);
 		base->defer_queue.lock = base->th_base_lock;
 		//std::condition_variable
+		printf("[%s][%d] std::condition_variable\n", __PRETTY_FUNCTION__, __LINE__);
 		EVTHREAD_ALLOC_COND(base->current_event_cond);
+		printf("[%s][%d] std::mutux std::condition_variable end \n", __PRETTY_FUNCTION__, __LINE__);
 		// 11. 设置 本地 event通知事件
 		r = evthread_make_base_notifiable(base);
 		if (r<0) 
@@ -2091,7 +2094,9 @@ static inline int event_add_internal(struct event *ev, const struct timeval *tv,
 	{
 		++base->current_event_waiters;
 		// 等待 通知工作  
+		printf("[%s][%d] cond_wait start  base->current_event_waiters= %d\n", __PRETTY_FUNCTION__, __LINE__, base->current_event_waiters);
 		EVTHREAD_COND_WAIT(base->current_event_cond, base->th_base_lock);
+		printf("[%s][%d] cond_wait end  base->current_event_waiters= %d\n", __PRETTY_FUNCTION__, __LINE__, base->current_event_waiters);
 	}
 #endif
 	// 3. 根据read 或者write 事件 把文件描述符添加到io map集合中
@@ -2278,8 +2283,10 @@ static inline int event_del_internal(struct event *ev)
 	if (base->current_event == ev && !EVBASE_IN_THREAD(base)) 
 	{
 		++base->current_event_waiters; // wait
-		// 等待 通知工作  
+		// 等待 通知工作 
+		printf("[%s][%d] cond_wait start  base->current_event_waiters= %d\n", __PRETTY_FUNCTION__, __LINE__, base->current_event_waiters);
 		EVTHREAD_COND_WAIT(base->current_event_cond, base->th_base_lock);
+		printf("[%s][%d] cond_wait end  base->current_event_waiters= %d\n", __PRETTY_FUNCTION__, __LINE__, base->current_event_waiters);
 	}
 #endif
 
@@ -2386,7 +2393,9 @@ void event_active_nolock(struct event *ev, int res, short ncalls)
 		{
 			++base->current_event_waiters;
 			// 等待 通知工作  
+			printf("[%s][%d] cond_wait start  base->current_event_waiters= %d\n", __PRETTY_FUNCTION__, __LINE__, base->current_event_waiters);
 			EVTHREAD_COND_WAIT(base->current_event_cond, base->th_base_lock);
+			printf("[%s][%d] cond_wait end  base->current_event_waiters= %d\n", __PRETTY_FUNCTION__, __LINE__, base->current_event_waiters);
 		}
 #endif
 		ev->ev_ncalls = ncalls;

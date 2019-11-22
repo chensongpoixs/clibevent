@@ -34,7 +34,7 @@
 #include "event2/util.h"
 #include "util-internal.h"
 #include "mm-internal.h"
-
+// 最小堆的结构体
 typedef struct min_heap
 {
 	struct event** p; // 数组
@@ -51,8 +51,8 @@ static inline unsigned	     min_heap_size(min_heap_t* s);
 static inline struct event*  min_heap_top(min_heap_t* s);
 /** 
 * 动态扩容
-* @param s : 哈希结构
-* @param n : 目前的哈希数据数量
+* @param s : 堆结构
+* @param n : 目前的堆数据数量
 * @return 返回是否成功
 **/
 static inline int	     min_heap_reserve(min_heap_t* s, unsigned n);
@@ -137,7 +137,7 @@ int min_heap_reserve(min_heap_t* s, unsigned n)
 		{
 			return -1;
 		}
-		// 4. 修改哈希的数据
+		// 4. 修改堆的数据
 		s->p = p;
 		s->a = a;
 	}
@@ -147,11 +147,13 @@ int min_heap_reserve(min_heap_t* s, unsigned n)
 void min_heap_shift_up_(min_heap_t* s, unsigned hole_index, struct event* e)
 {
     unsigned parent = (hole_index - 1) / 2;
+	// 这里libevent使用 最小堆 比较加入的超时的操作   以时间毫秒数的比较的   这里数据的使用数组构造完全二叉树的数据结构查询的时间复杂度为 O(1)
     while (hole_index && min_heap_elem_greater(s->p[parent], e))
     {
-	(s->p[hole_index] = s->p[parent])->ev_timeout_pos.min_heap_idx = hole_index;
-	hole_index = parent;
-	parent = (hole_index - 1) / 2;
+		// 从新排序    
+		(s->p[hole_index] = s->p[parent])->ev_timeout_pos.min_heap_idx = hole_index;
+		hole_index = parent;
+		parent = (hole_index - 1) / 2;
     }
     (s->p[hole_index] = e)->ev_timeout_pos.min_heap_idx = hole_index;
 }

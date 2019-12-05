@@ -2072,7 +2072,7 @@ static inline int event_add_internal(struct event *ev, const struct timeval *tv,
 	 * prepare for timeout insertion further below, if we get a
 	 * failure on any step, we should not change any state.
 	 */
-	// 1. 添加计时器到哈希表中
+	// 1. 添加计时器到最小堆中
 	if (tv != NULL && !(ev->ev_flags & EVLIST_TIMEOUT)) 
 	{
 		// 1.1 扩容操作
@@ -2105,15 +2105,17 @@ static inline int event_add_internal(struct event *ev, const struct timeval *tv,
 	{
 		if (ev->ev_events & (EV_READ | EV_WRITE))
 		{
+			// io事件的添加
 			res = evmap_io_add(base, ev->ev_fd, ev);
 		}
 		else if (ev->ev_events & EV_SIGNAL)
 		{
+			// 事件添加
 			res = evmap_signal_add(base, (int)ev->ev_fd, ev);
 		}
 		if (res != -1)
 		{
-			// 添加到反应堆队列中
+			// 添加到反应堆中失败的处理
 			event_queue_insert(base, ev, EVLIST_INSERTED);
 		}
 		if (res == 1) 
